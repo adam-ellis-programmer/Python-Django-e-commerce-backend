@@ -9,7 +9,18 @@
     {%if name%}
     <h1>Hello <strong>{{name}}</strong></h1>
     {%else%}
-    <h1>Hello hello world </h1>
+    <h1>Hello hello world</h1>
     {% endif %}
+
+    <hr />
+
+    <ul>
+      {% for product in products %}
+      <!-- <li>{{product.title}}</li> -->
+      <!-- for the join returns dictionaries -->
+      <!-- Product.objects.values('id', 'title', 'collection__title') -->
+      <li>{{product.title}}</li>
+      {% endfor %}
+    </ul>
   </body>
 </html>
