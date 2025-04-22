@@ -25,8 +25,8 @@ class Promotion(models.Model):
 # circular dependencey
 # By using related_name='+', you're telling Django:
 # don't need to access all collections where this product is featured from the product side
-# trys to create the reverse  collection_set nut we allready have 
-#  collection_set with collections 
+# trys to create the reverse  collection_set nut we allready have
+#  collection_set with collections
 class Collection(models.Model):
     title = models.CharField(max_length=255)
     featured_product = models.ForeignKey(
@@ -59,13 +59,22 @@ class Customer(models.Model):
         (MEMBERSHIP_SILVER, "Silver"),
         (MEMBERSHIP_GOLD, "Gold"),
     ]
+
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=255)
-    birth_date = models.DateField(null=True)
+    birth_date = models.DateTimeField(null=True)
     membership = models.CharField(
         max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
+
+    # https://docs.djangoproject.com/en/5.2/ref/models/options/#indexes
+    class Meta():
+        db_table = "store_customer"  # use singular names not plural
+        indexes = [
+            # index set on these fields
+            models.Index(fields=["last_name", "first_name"]),
+        ]
 
 
 class Order(models.Model):
