@@ -15,12 +15,16 @@
     <hr />
 
     <ul>
-      {% for product in products %}
-      <!-- <li>{{product.title}}</li> -->
+      {% for order in orders %}
+      <!-- <li>{{order.title}}</li> -->
       <!-- for the join returns dictionaries -->
-      <!-- Product.objects.values('id', 'title', 'collection__title') -->
-      <li>{{product.title}}</li>
-      {% endfor %}
+      <!-- order.objects.values('id', 'title', 'collection__title') -->
+      <!--  -->
+      <!-- <li>{{order.title}} -- {{order.collection.title}}</li> -->
+      <!-- <li>{{order.id}} --- {{order.customer.first_name}}</li> -->
+      {% endfor %} 
+      
+      <!-- {{result}} -->
     </ul>
   </body>
 </html>

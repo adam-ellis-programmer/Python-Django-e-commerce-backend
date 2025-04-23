@@ -28,7 +28,7 @@ get returns an object not a query set
 def sayHello(req):
 
     # with connection.cursor() as cursor:
-    #     cursor.execute() 
+    #     cursor.execute()
 
     # # context manager
     # with transaction.atomic():

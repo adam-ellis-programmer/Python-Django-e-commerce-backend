@@ -4,6 +4,24 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 # Create your models here.
 
 
+# custom manager
+class TaggedItemManager(models.Manager):
+
+    def get_tags_for(self, obj_type, obj_id):
+
+        # represents a specific Product row int the CONTENT table
+        content_type = ContentType.objects.get_for_model(obj_type)
+
+    # USED IN THE TAG ITEM MODEL
+    # select related loads tag first to prevent unwnated queries
+        return TaggedItem.objects\
+            .select_related('tag')\
+            .filter(
+                content_type=content_type,
+                object_id=obj_id
+            )
+
+
 class Tag(models.Model):
     label = models.CharField(max_length=255)
 
@@ -11,6 +29,7 @@ class Tag(models.Model):
 
 
 class TaggedItem(models.Model):
+    objects = TaggedItemManager()
     # what tag is applied to what object
     # remove from all assosiated objects
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)

@@ -33,6 +33,19 @@ class Collection(models.Model):
         'Product', on_delete=models.SET_NULL, null=True,
         related_name='+'
     )
+    # overide the string representation of an object
+    # every object has this magic method
+    # this __str__ method is called when we convert it to a string
+    #
+    # -> is type annotarion retuns a ...
+
+    def __str__(self) -> str:
+        # return super().__str__()
+        return self.title
+
+    # define a meta class for default ordering
+    class Meta:
+        ordering = ['title']
 
 
 class Product(models.Model):
@@ -47,6 +60,13 @@ class Product(models.Model):
     # target model is Promition -- django creates reverse in promotion class
     # promotions = models.ManyToManyField(Promotion, related_name='products')
     promotions = models.ManyToManyField(Promotion)
+
+    #  OVERIDING THE STRING REPRESENTATION OF THE PRODUCT MODEL
+    def __str__(self) -> str:
+        return self.title
+
+    class Meta:
+        ordering = ['title']
 
 
 class Customer(models.Model):
@@ -68,6 +88,9 @@ class Customer(models.Model):
     membership = models.CharField(
         max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
 
+    def __str__(self) -> str:
+        return f'{self.first_name}  {self.last_name}'
+
     # https://docs.djangoproject.com/en/5.2/ref/models/options/#indexes
     class Meta():
         db_table = "store_customer"  # use singular names not plural
@@ -75,6 +98,8 @@ class Customer(models.Model):
             # index set on these fields
             models.Index(fields=["last_name", "first_name"]),
         ]
+        # ordering = ['last_name', 'first_name']
+        ordering = ['first_name', 'last_name']
 
 
 class Order(models.Model):
@@ -88,7 +113,8 @@ class Order(models.Model):
         (PAYMENT_STATUS_FAILED, "Failed"),
     ]
 
-    placed_at = models.DateTimeField(auto_now=True)
+    # placed_at = models.DateTimeField(auto_now=True)
+    placed_at = models.DateTimeField()  # now displays in the form
     payment_status = models.CharField(
         max_length=1,
         choices=PAYMENT_STATUS_CHOICES,
@@ -99,6 +125,8 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+    # orderitem_set
+    # order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='items')
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField()
