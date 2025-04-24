@@ -1,5 +1,5 @@
+from django.core.validators import MinValueValidator
 from django.db import models
-
 # Create your models here.
 # https://docs.djangoproject.com/en/5.2/ref/models/fields/#field-types
 
@@ -51,15 +51,20 @@ class Collection(models.Model):
 class Product(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
-    description = models.TextField()
-    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+    # blank for admin interface
+    description = models.TextField(null=True, blank=True)
+    unit_price = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        validators=[MinValueValidator(1)]
+    )
     inventory = models.IntegerField()
     last_update = models.DateTimeField(auto_now=True)
     # takes the id of the collection associated with * we do not delete this if we delete a collection
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     # target model is Promition -- django creates reverse in promotion class
     # promotions = models.ManyToManyField(Promotion, related_name='products')
-    promotions = models.ManyToManyField(Promotion)
+    promotions = models.ManyToManyField(Promotion, blank=True)
 
     #  OVERIDING THE STRING REPRESENTATION OF THE PRODUCT MODEL
     def __str__(self) -> str:

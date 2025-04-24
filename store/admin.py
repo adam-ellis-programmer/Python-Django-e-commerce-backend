@@ -1,10 +1,11 @@
+from tags.models import TaggedItem
 from django.contrib import admin, messages
 from django.http import HttpRequest
 from . import models  # curr folder
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
-
+from django.contrib.contenttypes.admin import GenericTabularInline
 # Register your models here.
 
 # convention modelAdmin
@@ -28,8 +29,15 @@ class InventoryFilter(admin.SimpleListFilter):
             return queryset.filter(inventory__gte=10)
 
 
+# re registered in custom_store
+# class TagInline(GenericTabularInline):
+#     model = TaggedItem
+#     autocomplete_fields = ['tag']
+
+
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
+    # inlines = [TagInline]
     # form
     #  autocomplete_fields limits search fields to 10 then we have to search for them
     autocomplete_fields = ['collection']
@@ -52,6 +60,7 @@ class ProductAdmin(admin.ModelAdmin):
     # Select_related for eager loading / pre loading the RELATED fields
 
     list_select_related = ['collection']
+    search_fields = ['product']  # --2
 
     def collection_title(self, product):
         return product.collection.title
@@ -78,7 +87,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    # autocomplete_fields = ['collection']
+    # autocomplete_fields = ['customer']
     list_display = ['first_name', 'last_name', 'membership']
     list_editable = ['membership']
     list_per_page = 10
@@ -124,8 +133,20 @@ class CollectionAdmin(admin.ModelAdmin):
     # admin.site.register(models.Product, ProductAdmin)
 
 
+# in line class
+# this indirectly inherits from modelAdmin class
+# so we can use autoComplet etc
+class orderItemInline(admin.TabularInline):
+    autocomplete_fields = ['product']  # --1
+    model = models.OrderItem
+    extra = 0
+    min_num = 1
+    max_num = 10
+
+
 @admin.register(models.Order)
 class OrderAdmin(admin.ModelAdmin):
+    inlines = [orderItemInline]
     list_display = ['id', 'placed_at', 'customer']
 
 
